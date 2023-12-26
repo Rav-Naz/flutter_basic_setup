@@ -9,4 +9,6 @@ Engine • revision 54a7145303 \
 Tools • Dart 3.2.3 • DevTools 2.28.4
 
 ## Scheme contains:
-*
+* Preconfigurated customizable Themes with Typography
+* BLoC state management
+* Many shorthand in context
