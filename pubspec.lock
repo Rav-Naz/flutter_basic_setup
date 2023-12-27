@@ -664,6 +664,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.4"
+  sized_context:
+    dependency: "direct main"
+    description:
+      name: sized_context
+      sha256: "9921e6c09e018132c3e1c6a18e14febbc1cc5c87a200d64ff7578cb49991f6e7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0+4"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -757,6 +765,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.2"
+  universal_platform:
+    dependency: transitive
+    description:
+      name: universal_platform
+      sha256: d315be0f6641898b280ffa34e2ddb14f3d12b1a37882557869646e0cc363d0cc
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0+1"
   url_strategy:
     dependency: "direct main"
     description:

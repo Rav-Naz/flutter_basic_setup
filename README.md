@@ -17,6 +17,7 @@ Tools • Dart 3.2.3 • DevTools 2.28.4
 * Environmental settings
 * Easy animations
 * Routing
+* Basic responsiveness 
 * Many shorthand in context
 
 ## Project Setup:

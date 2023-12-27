@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_basic_setup/shared/cubits/intl_cubit.dart';
-import 'package:flutter_basic_setup/shared/cubits/theme_mode_cubit.dart';
-import 'package:flutter_basic_setup/shared/extensions/intl_extension.dart';
+import 'package:flutter_basic_setup/shared/extensions/size_extension.dart';
 import 'package:flutter_basic_setup/shared/extensions/theme_extenstion.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DetailsPage extends StatefulWidget {
   const DetailsPage({super.key, required this.title});
@@ -25,29 +22,6 @@ class DetailsPage extends StatefulWidget {
 }
 
 class _DetailsPageState extends State<DetailsPage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-      if (_counter.isEven) {
-        context.read<ThemeModeCubit>().setDarkMode();
-      } else {
-        context.read<ThemeModeCubit>().setLightMode();
-      }
-      var newLang =
-          IntlCubit.getLocaleByCountryCode(_counter.isEven ? "pl_PL" : "en_US");
-      if (newLang != null) {
-        context.read<IntlCubit>().loadLanguage(newLang);
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -89,18 +63,11 @@ class _DetailsPageState extends State<DetailsPage> {
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
-              context.translate("views.main"),
-            ),
-            Text('$_counter', style: context.theme.appTypos.title),
+            Text('${context.responsiveSize}',
+                style: context.theme.appTypos.title),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
