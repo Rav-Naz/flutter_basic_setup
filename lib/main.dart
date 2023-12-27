@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_basic_setup/shared/cubits/intl_cubit.dart';
 import 'package:flutter_basic_setup/shared/cubits/theme_mode_cubit.dart';
+import 'package:flutter_basic_setup/shared/extensions/intl_extension.dart';
 import 'package:flutter_basic_setup/shared/extensions/theme_extenstion.dart';
 import 'package:flutter_basic_setup/shared/themes.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  /// Load language
+  await IntlCubit.prepareLanguage();
   runApp(const App());
 }
 
@@ -14,8 +20,16 @@ class App extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => ThemeModeCubit(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => ThemeModeCubit(),
+        ),
+        BlocProvider(
+          lazy: false,
+          create: (context) => IntlCubit(),
+        )
+      ],
       child: BlocBuilder<ThemeModeCubit, ThemeMode>(
         builder: (context, currentThemeMode) {
           return MaterialApp(
@@ -65,6 +79,11 @@ class _MyHomePageState extends State<MyHomePage> {
       } else {
         context.read<ThemeModeCubit>().setLightMode();
       }
+      var newLang =
+          IntlCubit.getLocaleByCountryCode(_counter.isEven ? "pl_PL" : "en_US");
+      if (newLang != null) {
+        context.read<IntlCubit>().loadLanguage(newLang);
+      }
     });
   }
 
@@ -109,8 +128,8 @@ class _MyHomePageState extends State<MyHomePage> {
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+            Text(
+              context.translate("views.main"),
             ),
             Text('$_counter', style: context.theme.appTypos.title),
           ],

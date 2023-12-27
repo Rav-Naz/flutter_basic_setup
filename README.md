@@ -10,5 +10,7 @@ Tools • Dart 3.2.3 • DevTools 2.28.4
 
 ## Scheme contains:
 * Preconfigurated customizable Themes with Typography
+* Multi-language support
 * BLoC state management
+* Shared preferences
 * Many shorthand in context
