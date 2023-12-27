@@ -15,6 +15,8 @@ Tools • Dart 3.2.3 • DevTools 2.28.4
 * Shared preferences
 * API Client
 * Environmental settings
+* Easy animations
+* Routing
 * Many shorthand in context
 
 ## Project Setup:
