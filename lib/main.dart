@@ -5,9 +5,11 @@ import 'package:flutter_basic_setup/shared/extensions/intl_extension.dart';
 import 'package:flutter_basic_setup/shared/extensions/theme_extenstion.dart';
 import 'package:flutter_basic_setup/shared/themes.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:url_strategy/url_strategy.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  setPathUrlStrategy();
 
   /// Load language
   await IntlCubit.prepareLanguage();
