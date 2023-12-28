@@ -22,6 +22,12 @@ class AppTheme {
     fontFamily: 'Roboto',
   );
 
+  static const input = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.bold,
+    fontFamily: 'Roboto',
+  );
+
   /// Light Theme
   ///
   ///
@@ -37,8 +43,10 @@ class AppTheme {
       text: Color(0xFF141414));
 
   static final lightTypography = AppTypographyExtension(
-      title: title.copyWith(color: lightColors.text),
-      body: body.copyWith(color: lightColors.text));
+    title: title.copyWith(color: lightColors.text),
+    body: body.copyWith(color: lightColors.text),
+    input: input.copyWith(color: lightColors.text),
+  );
 
   /// Dark Theme
   ///
@@ -56,6 +64,8 @@ class AppTheme {
       text: Color(0xFFB4B4B4));
 
   static final darkTypography = AppTypographyExtension(
-      title: title.copyWith(color: darkColors.text),
-      body: body.copyWith(color: darkColors.text));
+    title: title.copyWith(color: darkColors.text),
+    body: body.copyWith(color: darkColors.text),
+    input: input.copyWith(color: darkColors.text),
+  );
 }

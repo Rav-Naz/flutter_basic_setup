@@ -1,5 +1,26 @@
 {
     "shared": {
+        "components": {
+            "input": {
+                "close": "Zamknij",
+                "clear": "Wyczyść",
+                "no_element": "Brak elementów na liście",
+                "valid_e-mail": "Nieprawidłowy adres e-mail",
+                "valid_date": "Data nie jest poprawna",
+                "not_null": "Pole nie może być puste",
+                "same_string": "Podane wartości nie są tożsame",
+                "max_length": "Maksymalna ilość znaków wynosi",
+                "min_length": "Minimalna ilość znaków wynosi",
+                "in_list": "Wpis znajduje się już na liście",
+                "regex": "Wartość jest podana w niepoprawnym formacie",
+                "phone_valid": "Nieprawidłowy numer telefonu",
+                "greater": "Podana liczba jest większa od",
+                "lower": "Podana liczba jest mniejsza od",
+                "search": "Wyszukaj element",
+                "past_date": "Data musi przypadać w przyszłości",
+                "after_date": "Data nie może być wcześniejsza niż $$$"
+            }
+        },
         "api": {
             "error": {
                 "message": "Wystąpił błąd",

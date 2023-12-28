@@ -1,5 +1,26 @@
 {
     "shared": {
+        "components": {
+            "input": {
+                "close": "Close",
+                "clear": "Clear",
+                "no_element": "No elements on the list",
+                "valid_e-mail": "Incorrect e-mail address",
+                "valid_date": "The date is incorrect",
+                "not_null": "The field must not be blank",
+                "same_string": "The values provided differ",
+                "max_length": "The maximum number of characters is",
+                "min_length": "The minimum number of characters is",
+                "in_list": "The value is already on the list",
+                "regex": "The value is in an incorrrect format",
+                "phone_valid": "Incorrect phone number",
+                "greater": "The number given is greater than",
+                "lower": "The number given is lower than",
+                "search": "Search for an element",
+                "past_date": "Date must be in the future",
+                "after_date": "Date must be later than $$$"
+            }
+        },
         "api": {
             "error": {
                 "message": "An error has occurred",

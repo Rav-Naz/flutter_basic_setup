@@ -58,7 +58,7 @@ class AppAPIClient {
   /// * **[error]** - Throwed error
   /// * Optional [expectedErrorsList] - List containing expeceted errors which should be customly handled
   String errorMessage(dynamic error,
-      {List<NeogageExpectedError>? expectedErrorsList}) {
+      {List<AppExpectedError>? expectedErrorsList}) {
     if (kDebugMode) {
       AppLogger.log([Colors.red, "[AppAPIClient] Error occured: $error"],
           error: true);
@@ -150,8 +150,8 @@ class AppAPIClient {
 /// * **[expectedStatus]** - Status of error
 /// * **[errorHandleMessage]** - Message which will be displayed in response of this error
 /// * Optional [expectedMessage] - Message of error
-class NeogageExpectedError {
-  NeogageExpectedError(this.expectedStatus, this.errorHandleMessage,
+class AppExpectedError {
+  AppExpectedError(this.expectedStatus, this.errorHandleMessage,
       {this.expectedMessage});
 
   int expectedStatus;
