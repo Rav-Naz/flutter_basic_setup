@@ -6,8 +6,8 @@ class AppTheme {
   /// Colors
   static const primary = Color(0xFF6200EE);
   static const secondary = Color(0xFF4F01BD);
-  static const error = Color(0xFFD11406);
-  static const success = Color(0xFF06D121);
+  static const error = Color(0xFFB11F14);
+  static const success = Color(0xFF128B22);
 
   /// Typography
   static const title = TextStyle(

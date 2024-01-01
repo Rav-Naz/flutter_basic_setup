@@ -43,8 +43,7 @@ class AppFormBuilder extends StatelessWidget {
             key: formKey,
             autovalidateMode: autovalidateMode,
             clearValueOnUnregister: clearValueOnUnregister,
-            enabled: enabled ??
-                appFormStateBloc?.stage != const AppFormStateStageLoading(),
+            enabled: enabled ?? state.stage != const AppFormStateStageLoading(),
             initialValue: initialValue,
             onChanged: () {
               onChanged?.call();

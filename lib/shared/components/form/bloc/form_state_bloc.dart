@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
 part 'form_state_event.dart';
@@ -21,10 +22,18 @@ class AppFormStateBloc extends Bloc<AppFormStateEvent, AppFormState> {
     }
   }
 
-  void _onFormStageChanged(
-      AppFormStageChanged event, Emitter<AppFormState> emit) {
+  Future<void> _onFormStageChanged(
+      AppFormStageChanged event, Emitter<AppFormState> emit) async {
     if (state.stage != event.newStage) {
       emit(state.copyWith(stage: event.newStage));
+      if (event.newStage == const AppFormStateStageError()) {
+        await Future.delayed(
+          2000.ms,
+          () {
+            emit(state.copyWith(stage: const AppFormStateStageNormal()));
+          },
+        );
+      }
     }
   }
 
