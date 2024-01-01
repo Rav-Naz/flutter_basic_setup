@@ -17,7 +17,6 @@ class AppFormStateBloc extends Bloc<AppFormStateEvent, AppFormState> {
   void _onFormValidChanged(
       AppFormValidChanged event, Emitter<AppFormState> emit) {
     if (state.isValid != event.newValid) {
-      print("_onFormValidChanged");
       emit(state.copyWith(isValid: event.newValid));
     }
   }
@@ -25,7 +24,6 @@ class AppFormStateBloc extends Bloc<AppFormStateEvent, AppFormState> {
   void _onFormStageChanged(
       AppFormStageChanged event, Emitter<AppFormState> emit) {
     if (state.stage != event.newStage) {
-      print("_onFormStageChanged");
       emit(state.copyWith(stage: event.newStage));
     }
   }

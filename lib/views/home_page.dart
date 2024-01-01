@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_basic_setup/shared/components/form/bloc/form_state_bloc.dart';
 import 'package:flutter_basic_setup/shared/components/form/form.dart';
 import 'package:flutter_basic_setup/shared/components/form/form_fields.dart';
 import 'package:flutter_basic_setup/shared/cubits/intl_cubit.dart';
@@ -53,50 +52,71 @@ class _HomePageState extends State<HomePage> {
           style: context.theme.appTypos.title,
         ),
       ),
-      body: BlocProvider(
-        create: (context) => AppFormStateBloc(),
-        child: BlocBuilder<AppFormStateBloc, AppFormState>(
-          builder: (context, appFormState) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    context.translate("views.main"),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              context.translate("views.main"),
+            ),
+            Text('$_counter', style: context.theme.appTypos.title),
+            TextButton(
+                onPressed: () {
+                  GoRouter.of(context).goNamed(DetailsPage.route);
+                },
+                child: Text('Details Page')),
+            AppFormBuilder(
+              formKey: _formKey,
+              child: (appFormState) => Column(
+                children: [
+                  AppTextField(
+                    name: 'email',
+                    label: "ASASDASD",
+                    isObligatory: true,
+                    autovalidateMode: AutovalidateMode.disabled,
+                    validator: (p0) => InputValidators.isValidEmail(p0),
                   ),
-                  Text('$_counter', style: context.theme.appTypos.title),
-                  TextButton(
-                      onPressed: () {
-                        GoRouter.of(context).goNamed(DetailsPage.route);
-                      },
-                      child: Text('Details Page')),
-                  AppFormBuilder(
-                    formKey: _formKey,
-                    child: Column(
-                      children: [
-                        AppTextField(
-                          name: 'email',
-                          label: "ASASDASD",
-                          autovalidateMode: AutovalidateMode.disabled,
-                          validator: (p0) => InputValidators.isValidEmail(p0),
-                        ),
-                        AppTextField(
-                          name: 'emaxil',
-                          validator: (p0) => InputValidators.isValidEmail(p0),
-                        ),
-                        const SizedBox(height: 10),
-                        MaterialButton(
-                          color: Theme.of(context).colorScheme.secondary,
-                          onPressed: () {},
-                          child: const Text('Login'),
+                  AppTextField(
+                    name: 'emaxil',
+                    validator: (p0) => InputValidators.isValidEmail(p0),
+                  ),
+                  AppCheckbox(
+                    validator: (p0) =>
+                        p0 == false ? "Pole jest obowiązkowe" : null,
+                    name: "checkbox",
+                    label: "iusdjfks",
+                  ),
+                  AppDropdown(
+                      isObligatory: true,
+                      initialValue: null,
+                      validator: (p0) =>
+                          InputValidators.isNotNull(p0?.toString()),
+                      items: [
+                        DropdownMenuItem(
+                          child: Text("data"),
+                          value: 1,
                         )
                       ],
-                    ),
+                      name: "dropdown",
+                      label: "Dropdown"),
+                  AppSlider(name: "asd", initialValue: 1, min: 0, max: 50),
+                  AppSwitch(
+                    name: "ADS",
+                    label: "Switch",
+                    isObligatory: true,
                   ),
+                  const SizedBox(height: 10),
+                  MaterialButton(
+                    color: appFormState.isValid
+                        ? context.theme.appColors.success
+                        : context.theme.appColors.error,
+                    onPressed: () {},
+                    child: const Text('Login'),
+                  )
                 ],
               ),
-            );
-          },
+            ),
+          ],
         ),
       ),
       floatingActionButton: FloatingActionButton(

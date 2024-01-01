@@ -24,7 +24,7 @@ class AppTheme {
 
   static const input = TextStyle(
     fontSize: 14,
-    fontWeight: FontWeight.bold,
+    fontWeight: FontWeight.w500,
     fontFamily: 'Roboto',
   );
 
@@ -32,8 +32,10 @@ class AppTheme {
   ///
   ///
   static final light = ThemeData.light().copyWith(
-    extensions: [lightColors, lightTypography],
-  );
+      extensions: [lightColors, lightTypography],
+      highlightColor: Colors.transparent,
+      splashColor: primary.withOpacity(0.2),
+      hoverColor: primary.withOpacity(0.1));
   static const lightColors = AppColorsExtension(
       primary: primary,
       secondary: secondary,
@@ -53,6 +55,10 @@ class AppTheme {
   ///
   static final dark = ThemeData.dark().copyWith(
     extensions: [darkColors, darkTypography],
+    highlightColor: Colors.transparent,
+    splashColor: primary.withOpacity(0.2),
+    hoverColor: primary.withOpacity(0.1),
+    focusColor: Colors.transparent,
   );
 
   static const darkColors = AppColorsExtension(
