@@ -26,7 +26,8 @@ final class AppFormStateStage {
 
 final class AppFormStateStageNormal extends AppFormStateStage
     with EquatableMixin {
-  const AppFormStateStageNormal();
+  const AppFormStateStageNormal({this.isValid});
+  final bool? isValid;
   @override
   List<Object> get props => [1];
 }

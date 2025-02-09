@@ -24,6 +24,9 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       Color? error,
       Color? success,
       Color? background,
+      Color? grey,
+      Color? grey2,
+      Color? grey3,
       Color? text}) {
     return AppColorsExtension(
         primary: primary ?? this.primary,
@@ -50,5 +53,34 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
         success: Color.lerp(success, other.success, t)!,
         background: Color.lerp(background, other.background, t)!,
         text: Color.lerp(text, other.text, t)!);
+  }
+}
+
+extension ModifyColorExtension on Color {
+  Color darken([double amount = .1]) {
+    assert(amount >= 0 && amount <= 1);
+
+    final hsl = HSLColor.fromColor(this);
+    final hslDark = hsl.withLightness((hsl.lightness - amount).clamp(0.0, 1.0));
+
+    return hslDark.toColor();
+  }
+
+  Color lighten([double amount = .1]) {
+    assert(amount >= 0 && amount <= 1);
+
+    final hsl = HSLColor.fromColor(this);
+    final hslLight =
+        hsl.withLightness((hsl.lightness + amount).clamp(0.0, 1.0));
+
+    return hslLight.toColor();
+  }
+
+  LinearGradient appGradient() {
+    return LinearGradient(
+        colors: [this, darken(0.15)],
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        stops: const [0, 0.9]);
   }
 }

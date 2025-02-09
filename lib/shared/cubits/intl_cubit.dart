@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_basic_setup/shared/logger.dart';
-import 'package:flutter_basic_setup/shared/utils.dart';
+import 'package:flutter_basic_setup/shared/utils/utils.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

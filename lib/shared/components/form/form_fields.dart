@@ -2,80 +2,118 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_basic_setup/shared/components/form/bloc/form_state_bloc.dart';
 import 'package:flutter_basic_setup/shared/cubits/intl_cubit.dart';
+import 'package:flutter_basic_setup/shared/extensions/read_or_null_extension.dart';
 import 'package:flutter_basic_setup/shared/extensions/theme_extenstion.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter_basic_setup/shared/themes.dart';
-import 'package:flutter_basic_setup/shared/utils.dart';
+import 'package:flutter_basic_setup/shared/utils/utils.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'dart:ui' as ui;
 
 import 'package:intl/intl.dart';
 
 class AppFormFieldDecoration extends InputDecoration {
-  AppFormFieldDecoration(Type inputType, BuildContext context, String name,
-      Color stateColor, String? errorText, bool isFocused, bool isObligatory)
-      : super(
-          label: AnimatedDefaultTextStyle(
-            duration: const Duration(milliseconds: 150),
-            style: context.theme.appTypos.input.copyWith(
-                color: stateColor, fontSize: isFocused ? 19 : null, height: 1),
-            child: RichText(
-                text: TextSpan(children: [
-              WidgetSpan(
-                  child: Text([AppTextField, AppDropdown].contains(inputType)
-                      ? name
-                      : "")),
-              if (![AppCheckbox, AppSwitch].contains(inputType) && isObligatory)
-                WidgetSpan(
+  AppFormFieldDecoration(
+    Type inputType,
+    BuildContext context,
+    String name,
+    Color stateColor,
+    String? errorText,
+    bool isFocused,
+    bool isObligatory, {
+    String? hint,
+    String? label,
+    String? prefix,
+    String? inputText,
+  }) : super(
+          filled: [AppTextField, AppDropdown].contains(inputType),
+          counter: const SizedBox.shrink(),
+          fillColor: context.theme.appColors.background,
+          floatingLabelBehavior: FloatingLabelBehavior.always,
+          alignLabelWithHint: false,
+          prefixIconConstraints:
+              const BoxConstraints(minWidth: 0, minHeight: 0),
+          prefixIcon: prefix != null
+              ? Padding(
+                  padding: const EdgeInsets.only(left: 15.0),
+                  child: AnimatedDefaultTextStyle(
+                    duration: const Duration(milliseconds: 300),
+                    style: context.theme.appTypos.input.copyWith(
+                        color: Colors.white.withOpacity(
+                            isFocused || (inputText?.isNotEmpty ?? false)
+                                ? 1
+                                : 0.5),
+                        height: 1.25),
                     child: Text(
-                  " *",
-                  style: TextStyle(color: context.theme.appColors.error),
-                )),
-            ])),
-          ),
-          counterStyle: context.theme.appTypos.body.copyWith(color: stateColor),
+                      "$prefix ",
+                    ),
+                  ),
+                )
+              : null,
+          labelStyle: context.theme.appTypos.title
+              .copyWith(color: Colors.white, height: 1),
+          label: label != null
+              ? Transform.translate(
+                  offset: const Offset(-30, 0),
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
+                    // decoration: BoxDecoration(
+                    //     gradient: context.theme.appColors.primary.appGradient(),
+                    //     borderRadius: BorderRadius.circular(5)),
+                    child: RichText(
+                        text: TextSpan(children: [
+                      WidgetSpan(
+                        child: Text(
+                            [AppTextField, AppDropdown].contains(inputType)
+                                ? label.toUpperCase()
+                                : ""),
+                      ),
+                    ])),
+                  ),
+                )
+              : null,
+          contentPadding: [AppTextField, AppDropdown].contains(inputType)
+              ? const EdgeInsets.all(15)
+              : null,
+          hintText: hint,
+          hintStyle: context.theme.appTypos.input
+              .copyWith(color: Colors.white.withOpacity(0.5)),
+          counterStyle: context.theme.appTypos.body,
           isCollapsed: [AppCheckbox, AppSlider].contains(inputType),
-          // alignLabelWithHint: true,
-          error: errorText != null
+          error: errorText != null && errorText.isNotEmpty
               ? Transform.translate(
                   offset: [AppCheckbox].contains(inputType)
                       ? const Offset(5, -5)
-                      : Offset.zero,
+                      : [AppTextField].contains(inputType)
+                          ? const Offset(-10, -5)
+                          : Offset.zero,
                   child: Text(
                     errorText,
                     style: context.theme.appTypos.body.copyWith(
-                        color: context.theme.appColors.error, height: 1.5),
+                        color: context.theme.appColors.primary, height: 1.5),
                   ),
                 )
               : null,
           errorMaxLines: 2,
           border: InputBorder.none,
           focusedBorder: [AppTextField, AppDropdown].contains(inputType)
-              ? OutlineInputBorder(
-                  borderSide: BorderSide(
-                      color: context.theme.appColors.primary, width: 1.5))
+              ? OutlineInputBorder(borderRadius: BorderRadius.circular(10))
               : null,
           enabledBorder: [AppTextField, AppDropdown].contains(inputType)
-              ? OutlineInputBorder(
-                  borderSide: BorderSide(
-                      color: context.theme.appColors.text, width: 1.5))
+              ? OutlineInputBorder(borderRadius: BorderRadius.circular(10))
               : null,
           disabledBorder: [AppTextField, AppDropdown].contains(inputType)
-              ? OutlineInputBorder(
-                  borderSide: BorderSide(
-                      color: context.theme.appColors.text.withOpacity(0.7),
-                      width: 1.5))
+              ? OutlineInputBorder(borderRadius: BorderRadius.circular(10))
               : null,
           errorBorder: [AppTextField, AppDropdown].contains(inputType)
-              ? OutlineInputBorder(
-                  borderSide: BorderSide(
-                      color: context.theme.appColors.error, width: 1.5))
+              ? OutlineInputBorder(borderRadius: BorderRadius.circular(10))
               : null,
           focusedErrorBorder: [AppTextField, AppDropdown].contains(inputType)
-              ? OutlineInputBorder(
-                  borderSide: BorderSide(
-                      color: context.theme.appColors.error, width: 1.5))
+              ? OutlineInputBorder(borderRadius: BorderRadius.circular(10))
               : null,
         );
 }
@@ -87,7 +125,7 @@ class AppFieldOperator<T> extends StatelessWidget {
     required this.onValidateStream,
     required this.hasFocusStream,
     required this.currentValueStream,
-    required this.enabled,
+    this.enabled,
     required this.builder,
     required this.validator,
     required this.inputType,
@@ -97,67 +135,79 @@ class AppFieldOperator<T> extends StatelessWidget {
   final Stream<bool> onValidateStream;
   final Stream<bool> hasFocusStream;
   final Stream<T?> currentValueStream;
-  final bool enabled;
+  final bool? enabled;
   final Type inputType;
-  final Widget Function(Color statusColor, String? errorText, bool isFocused)
+  final Widget Function(
+          Color statusColor, String? errorText, bool isFocused, bool enabled)
       builder;
   final String? Function(T?)? validator;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Opacity(
-        opacity: enabled ? 1.0 : 0.3,
-        child: StreamBuilder<bool>(
-            stream: onValidateStream,
-            initialData: false,
-            builder: (context, validate) {
-              return StreamBuilder<bool>(
-                  stream: hasFocusStream,
+    return BlocBuilder<AppFormStateBloc, AppFormState>(
+        bloc: context.readOrNull<AppFormStateBloc>(),
+        builder: (context, state) {
+          var _enabled =
+              enabled ?? state.stage == const AppFormStateStageNormal();
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: AnimatedOpacity(
+              duration: const Duration(milliseconds: 300),
+              opacity: (enabled ?? _enabled) ? 1.0 : 0.6,
+              child: StreamBuilder<bool>(
+                  stream: onValidateStream,
                   initialData: false,
-                  builder: (context, isFocused) {
-                    if (!dirty && touched && !isFocused.data!) {
-                      dirty = true;
-                    }
-                    if (isFocused.data!) {
-                      touched = true;
-                      if (inputType == AppCheckbox) {
-                        dirty = true;
-                      }
-                    }
-                    return StreamBuilder<T?>(
-                        stream: currentValueStream,
-                        builder: (context, inputValue) {
-                          String? errorText = touched && dirty || validate.data!
-                              ? validator?.call(inputValue.data)
-                              : null;
-                          Color stateColor = !enabled
-                              ? context.theme.appColors.text.withOpacity(0.7)
-                              : errorText != null
-                                  ? context.theme.appColors.error
-                                  : isFocused.data!
-                                      ? context.theme.appColors.primary
-                                      : context.theme.appColors.text;
+                  builder: (context, validate) {
+                    return StreamBuilder<bool>(
+                        stream: hasFocusStream,
+                        initialData: false,
+                        builder: (context, isFocused) {
+                          if (!dirty && touched && !isFocused.data!) {
+                            dirty = true;
+                          }
+                          if (isFocused.data!) {
+                            touched = true;
+                            if (inputType == AppCheckbox) {
+                              dirty = true;
+                            }
+                          }
+                          return StreamBuilder<T?>(
+                              stream: currentValueStream,
+                              builder: (context, inputValue) {
+                                String? errorText =
+                                    touched && dirty || validate.data!
+                                        ? validator?.call(inputValue.data)
+                                        : null;
+                                Color stateColor = !_enabled
+                                    ? context.theme.appColors.text
+                                        .withOpacity(0.7)
+                                    : errorText != null
+                                        ? context.theme.appColors.error
+                                        : isFocused.data!
+                                            ? context.theme.appColors.primary
+                                            : context.theme.appColors.text;
 
-                          return builder(
-                              stateColor, errorText, isFocused.data ?? false);
+                                return builder(stateColor, errorText,
+                                    isFocused.data ?? false, _enabled);
+                              });
                         });
-                  });
-            }),
-      ),
-    );
+                  }),
+            ),
+          );
+        });
   }
 }
 
 class AppTextField extends StatefulWidget {
   final String name;
+  final String? hint;
   final String? label;
+  final String? prefix;
   final String? Function(String?)? validator;
   final InputDecoration? decoration;
   final void Function(String?)? onChanged;
-  final String? Function(String?)? valueTransformer;
-  final bool enabled;
+  final dynamic Function(String?)? valueTransformer;
+  final bool? enabled;
   final void Function(String?)? onSaved;
   final AutovalidateMode autovalidateMode;
   final void Function()? onReset;
@@ -216,11 +266,13 @@ class AppTextField extends StatefulWidget {
     super.key,
     required this.name,
     this.label,
+    this.hint,
+    this.prefix,
     this.validator,
     this.decoration,
     this.onChanged,
     this.valueTransformer,
-    this.enabled = true,
+    this.enabled,
     this.onSaved,
     this.autovalidateMode = AutovalidateMode.disabled,
     this.onReset,
@@ -228,7 +280,7 @@ class AppTextField extends StatefulWidget {
     this.restorationId,
     this.initialValue,
     this.readOnly = false,
-    this.isObligatory = false,
+    this.isObligatory = true,
     this.maxLines,
     this.obscureText = false,
     this.textCapitalization = TextCapitalization.none,
@@ -243,7 +295,7 @@ class AppTextField extends StatefulWidget {
     this.keyboardType,
     this.style,
     this.controller,
-    this.textInputAction,
+    this.textInputAction = TextInputAction.next,
     this.strutStyle,
     this.textDirection,
     this.maxLength,
@@ -285,7 +337,7 @@ class _AppTextFieldState extends State<AppTextField> {
   final FocusNode _focus = FocusNode();
   final onValidate = StreamController<bool>();
   final hasFocus = StreamController<bool>();
-  final currentValue = StreamController<String?>();
+  final currentValue = StreamController<String?>.broadcast();
 
   @override
   void initState() {
@@ -314,83 +366,91 @@ class _AppTextFieldState extends State<AppTextField> {
       currentValueStream: currentValue.stream,
       enabled: widget.enabled,
       validator: widget.validator,
-      builder: (stateColor, errorText, isFocused) {
-        return FormBuilderTextField(
-          name: widget.name,
-          validator: widget.validator,
-          decoration: widget.decoration ??
-              AppFormFieldDecoration(
-                  AppTextField,
-                  context,
-                  widget.label ?? widget.name,
-                  stateColor,
-                  errorText,
-                  isFocused,
-                  widget.isObligatory),
-          onChanged: (value) {
-            widget.onChanged?.call(value);
-            _debouncer.run(() {
-              currentValue.add((value?.isEmpty ?? true) ? null : value);
+      builder: (stateColor, errorText, isFocused, isEnabled) {
+        return StreamBuilder<String?>(
+            stream: currentValue.stream,
+            initialData: "",
+            builder: (context, inputValue) {
+              return FormBuilderTextField(
+                name: widget.name,
+                validator: widget.validator,
+                decoration: widget.decoration ??
+                    AppFormFieldDecoration(AppTextField, context, widget.name,
+                        stateColor, errorText, isFocused, widget.isObligatory,
+                        hint: widget.hint,
+                        label: widget.label,
+                        prefix: widget.prefix,
+                        inputText: inputValue.data),
+                onChanged: (value) {
+                  widget.onChanged?.call(value);
+                  _debouncer.run(() {
+                    currentValue.add((value?.isEmpty ?? true) ? null : value);
+                  });
+                },
+                valueTransformer: widget.valueTransformer,
+                enabled: isEnabled,
+                onSaved: (newValue) {
+                  widget.onSaved?.call(newValue);
+                  onValidate.add(true);
+                },
+                autovalidateMode: widget.autovalidateMode,
+                onReset: widget.onReset,
+                focusNode: widget.focusNode ?? _focus,
+                restorationId: widget.restorationId,
+                initialValue: widget.initialValue,
+                readOnly: widget.readOnly,
+                maxLines: widget.maxLines ?? 1,
+                obscureText: widget.obscureText,
+                textCapitalization: widget.textCapitalization,
+                scrollPadding: widget.scrollPadding,
+                enableInteractiveSelection: widget.enableInteractiveSelection,
+                maxLengthEnforcement: widget.maxLengthEnforcement,
+                textAlign: widget.textAlign,
+                autofocus: widget.autofocus,
+                autocorrect: widget.autocorrect,
+                cursorWidth: widget.cursorWidth,
+                cursorHeight: widget.cursorHeight,
+                keyboardType: widget.keyboardType,
+                style: widget.style ?? context.theme.appTypos.input,
+                controller: widget.controller,
+                textInputAction: widget.textInputAction,
+                strutStyle: widget.strutStyle,
+                textDirection: widget.textDirection,
+                maxLength: widget.maxLength,
+                onEditingComplete: widget.onEditingComplete,
+                onSubmitted: (v) {
+                  context.read<AppFormStateBloc>().doSubmit();
+                  widget.onSubmitted?.call(v);
+                },
+                inputFormatters: widget.inputFormatters,
+                cursorRadius: widget.cursorRadius,
+                cursorColor:
+                    widget.cursorColor ?? context.theme.appColors.primary,
+                keyboardAppearance: widget.keyboardAppearance,
+                buildCounter: widget.buildCounter,
+                expands: widget.expands,
+                minLines: widget.minLines,
+                showCursor: widget.showCursor,
+                onTap: widget.onTap,
+                onTapOutside: widget.onTapOutside,
+                enableSuggestions: widget.enableSuggestions,
+                textAlignVertical: widget.textAlignVertical,
+                dragStartBehavior: widget.dragStartBehavior,
+                scrollController: widget.scrollController,
+                scrollPhysics: widget.scrollPhysics,
+                selectionWidthStyle: widget.selectionWidthStyle,
+                smartDashesType: widget.smartDashesType,
+                smartQuotesType: widget.smartQuotesType,
+                selectionHeightStyle: widget.selectionHeightStyle,
+                autofillHints: widget.autofillHints,
+                obscuringCharacter: widget.obscuringCharacter,
+                mouseCursor: widget.mouseCursor,
+                contextMenuBuilder: widget.contextMenuBuilder,
+                magnifierConfiguration: widget.magnifierConfiguration,
+                contentInsertionConfiguration:
+                    widget.contentInsertionConfiguration,
+              );
             });
-          },
-          valueTransformer: widget.valueTransformer,
-          enabled: widget.enabled,
-          onSaved: (newValue) {
-            widget.onSaved?.call(newValue);
-            onValidate.add(true);
-          },
-          autovalidateMode: widget.autovalidateMode,
-          onReset: widget.onReset,
-          focusNode: widget.focusNode ?? _focus,
-          restorationId: widget.restorationId,
-          initialValue: widget.initialValue,
-          readOnly: widget.readOnly,
-          maxLines: widget.maxLines ?? 1,
-          obscureText: widget.obscureText,
-          textCapitalization: widget.textCapitalization,
-          scrollPadding: widget.scrollPadding,
-          enableInteractiveSelection: widget.enableInteractiveSelection,
-          maxLengthEnforcement: widget.maxLengthEnforcement,
-          textAlign: widget.textAlign,
-          autofocus: widget.autofocus,
-          autocorrect: widget.autocorrect,
-          cursorWidth: widget.cursorWidth,
-          cursorHeight: widget.cursorHeight,
-          keyboardType: widget.keyboardType,
-          style: widget.style,
-          controller: widget.controller,
-          textInputAction: widget.textInputAction,
-          strutStyle: widget.strutStyle,
-          textDirection: widget.textDirection,
-          maxLength: widget.maxLength,
-          onEditingComplete: widget.onEditingComplete,
-          onSubmitted: widget.onSubmitted,
-          inputFormatters: widget.inputFormatters,
-          cursorRadius: widget.cursorRadius,
-          cursorColor: widget.cursorColor,
-          keyboardAppearance: widget.keyboardAppearance,
-          buildCounter: widget.buildCounter,
-          expands: widget.expands,
-          minLines: widget.minLines,
-          showCursor: widget.showCursor,
-          onTap: widget.onTap,
-          onTapOutside: widget.onTapOutside,
-          enableSuggestions: widget.enableSuggestions,
-          textAlignVertical: widget.textAlignVertical,
-          dragStartBehavior: widget.dragStartBehavior,
-          scrollController: widget.scrollController,
-          scrollPhysics: widget.scrollPhysics,
-          selectionWidthStyle: widget.selectionWidthStyle,
-          smartDashesType: widget.smartDashesType,
-          smartQuotesType: widget.smartQuotesType,
-          selectionHeightStyle: widget.selectionHeightStyle,
-          autofillHints: widget.autofillHints,
-          obscuringCharacter: widget.obscuringCharacter,
-          mouseCursor: widget.mouseCursor,
-          contextMenuBuilder: widget.contextMenuBuilder,
-          magnifierConfiguration: widget.magnifierConfiguration,
-          contentInsertionConfiguration: widget.contentInsertionConfiguration,
-        );
       },
     );
   }
@@ -405,7 +465,7 @@ class AppCheckbox extends StatelessWidget {
   final InputDecoration? decoration;
   final ValueChanged<bool?>? onChanged;
   final ValueTransformer<bool?>? valueTransformer;
-  final bool enabled;
+  final bool? enabled;
   final FormFieldSetter<bool?>? onSaved;
   final AutovalidateMode autovalidateMode;
   final VoidCallback? onReset;
@@ -414,6 +474,7 @@ class AppCheckbox extends StatelessWidget {
   final String? restorationId;
   final Widget? title;
   final Color? activeColor;
+  final Color? textColor;
   final bool autofocus;
   final Color? checkColor;
   final EdgeInsets contentPadding;
@@ -434,7 +495,7 @@ class AppCheckbox extends StatelessWidget {
     this.decoration,
     this.onChanged,
     this.valueTransformer,
-    this.enabled = true,
+    this.enabled,
     this.isObligatory = false,
     this.onSaved,
     this.autovalidateMode = AutovalidateMode.disabled,
@@ -445,6 +506,7 @@ class AppCheckbox extends StatelessWidget {
     this.activeColor,
     this.autofocus = false,
     this.checkColor,
+    this.textColor,
     this.contentPadding = EdgeInsets.zero,
     this.controlAffinity = ListTileControlAffinity.leading,
     this.secondary,
@@ -459,76 +521,103 @@ class AppCheckbox extends StatelessWidget {
 
   final hasFocus = StreamController<bool>();
 
-  final currentValue = StreamController<bool?>();
+  final currentValue = StreamController<bool?>.broadcast();
 
   @override
   Widget build(BuildContext context) {
-    return AppFieldOperator<bool>(
-        inputType: AppCheckbox,
-        onValidateStream: onValidate.stream,
-        hasFocusStream: hasFocus.stream,
-        currentValueStream: currentValue.stream,
-        enabled: enabled,
-        validator: validator,
-        builder: (stateColor, errorText, isFocused) {
-          return FormBuilderCheckbox(
-            key: key,
-            name: name,
-            validator: validator,
-            initialValue: initialValue,
-            decoration: decoration ??
-                AppFormFieldDecoration(AppCheckbox, context, name, stateColor,
-                    errorText, isFocused, isObligatory),
-            onChanged: (value) {
-              onChanged?.call(value);
-              currentValue.add(value);
-              hasFocus.add(value ?? true);
-            },
-            valueTransformer: valueTransformer,
-            enabled: enabled,
-            onSaved: (newValue) {
-              onSaved?.call(newValue);
-              onValidate.add(true);
-            },
-            autovalidateMode: autovalidateMode,
-            onReset: onReset,
-            focusNode: focusNode,
-            restorationId: restorationId,
-            title: Transform.translate(
-              offset: const Offset(-10, 0),
-              child: title ??
-                  RichText(
-                      text: TextSpan(
-                          style: context.theme.appTypos.input,
-                          children: [
-                        WidgetSpan(
-                            child: Text(
-                          label ?? name,
-                          style: context.theme.appTypos.input,
-                        )),
-                        if (isObligatory)
-                          WidgetSpan(
-                              child: Text(
-                            " *",
-                            style:
-                                TextStyle(color: context.theme.appColors.error),
-                          )),
-                      ])),
-            ),
-            activeColor: context.theme.appColors.primary,
-            autofocus: autofocus,
-            checkColor: AppTheme.darkColors.text,
-            contentPadding: contentPadding,
-            controlAffinity: controlAffinity,
-            secondary: secondary,
-            selected: selected,
-            subtitle: subtitle,
-            tristate: tristate,
-            shape: shape,
-            side: side ??
-                BorderSide(width: 1.5, color: context.theme.appColors.text),
-          );
-        });
+    return Transform.scale(
+      scale: 1.5,
+      child: AppFieldOperator<bool>(
+          inputType: AppCheckbox,
+          onValidateStream: onValidate.stream,
+          hasFocusStream: hasFocus.stream,
+          currentValueStream: currentValue.stream,
+          enabled: enabled,
+          validator: validator,
+          builder: (stateColor, errorText, isFocused, isEnabled) {
+            return ListTileTheme(
+              horizontalTitleGap: 0,
+              child: StreamBuilder<bool?>(
+                  stream: currentValue.stream,
+                  initialData: false,
+                  builder: (context, currentVal) {
+                    return Theme(
+                      data: Theme.of(context).copyWith(
+                        checkboxTheme: CheckboxThemeData(
+                          fillColor: MaterialStatePropertyAll(currentVal.data!
+                              ? context.theme.appColors.primary
+                              : Colors.transparent),
+                        ),
+                      ),
+                      child: FormBuilderCheckbox(
+                        key: key,
+                        name: name,
+                        validator: validator,
+                        initialValue: initialValue,
+                        decoration: decoration ??
+                            AppFormFieldDecoration(AppCheckbox, context, name,
+                                stateColor, errorText, isFocused, isObligatory),
+                        onChanged: (value) {
+                          onChanged?.call(value);
+                          currentValue.add(value);
+                          hasFocus.add(value ?? true);
+                        },
+                        valueTransformer: valueTransformer,
+                        enabled: isEnabled,
+                        onSaved: (newValue) {
+                          onSaved?.call(newValue);
+                          onValidate.add(true);
+                        },
+                        autovalidateMode: autovalidateMode,
+                        onReset: onReset,
+                        focusNode: focusNode,
+                        restorationId: restorationId,
+                        title: title ??
+                            RichText(
+                                text: TextSpan(
+                                    style: context.theme.appTypos.body.copyWith(
+                                        fontSize: 9.5,
+                                        letterSpacing: 0,
+                                        color: textColor),
+                                    children: [
+                                  WidgetSpan(
+                                      child: Text(
+                                    label ?? name,
+                                    style: context.theme.appTypos.body.copyWith(
+                                        fontSize: 9.5,
+                                        letterSpacing: 0,
+                                        color: textColor),
+                                  )),
+                                  if (isObligatory)
+                                    WidgetSpan(
+                                        child: Text(
+                                      " *",
+                                      style: TextStyle(
+                                          color: context.theme.appColors.error),
+                                    )),
+                                ])),
+                        activeColor: context.theme.appColors.primary,
+                        autofocus: autofocus,
+                        checkColor: AppTheme.darkColors.text,
+                        contentPadding: contentPadding,
+                        controlAffinity: controlAffinity,
+                        secondary: secondary,
+                        selected: selected,
+                        subtitle: subtitle,
+                        tristate: tristate,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5)),
+                        side: side ??
+                            BorderSide(
+                                width: 1,
+                                color:
+                                    textColor ?? context.theme.appColors.text),
+                      ),
+                    );
+                  }),
+            );
+          }),
+    );
   }
 }
 
@@ -540,7 +629,7 @@ class AppDateTimePicker extends StatefulWidget {
   final InputDecoration? decoration;
   final void Function(DateTime?)? onChanged;
   final dynamic Function(DateTime?)? valueTransformer;
-  final bool enabled;
+  final bool? enabled;
   final void Function(DateTime?)? onSaved;
   final AutovalidateMode? autovalidateMode;
   final void Function()? onReset;
@@ -641,7 +730,7 @@ class AppDateTimePicker extends StatefulWidget {
     this.decoration,
     this.onChanged,
     this.valueTransformer,
-    this.enabled = true,
+    this.enabled,
     this.onSaved,
     this.autovalidateMode = AutovalidateMode.disabled,
     this.onReset,
@@ -742,7 +831,7 @@ class _AppDateTimePickerState extends State<AppDateTimePicker> {
         currentValueStream: currentValue.stream,
         enabled: widget.enabled,
         validator: widget.validator,
-        builder: (stateColor, errorText, isFocused) {
+        builder: (stateColor, errorText, isFocused, isEnabled) {
           return FormBuilderDateTimePicker(
             name: widget.name,
             textDirection: widget.textDirection,
@@ -771,7 +860,7 @@ class _AppDateTimePickerState extends State<AppDateTimePicker> {
             initialTime: widget.initialTime,
             initialValue: widget.initialValue,
             inputType: widget.inputType,
-            enabled: widget.enabled,
+            enabled: isEnabled,
             errorFormatText: widget.errorFormatText,
             errorInvalidText: widget.errorInvalidText,
             fieldHintText: widget.fieldHintText,
@@ -839,14 +928,14 @@ class AppDropdown<T> extends StatefulWidget {
   final T? initialValue;
   final InputDecoration? decoration;
   final void Function(T?)? onChanged;
-  final T? Function(T?)? valueTransformer;
-  final bool enabled;
+  final dynamic Function(T?)? valueTransformer;
+  final bool? enabled;
   final void Function(T?)? onSaved;
   final AutovalidateMode autovalidateMode;
   final void Function()? onReset;
   final FocusNode? focusNode;
   final String? restorationId;
-  final List<DropdownMenuItem<T>> items;
+  final List<T> items;
   final bool isExpanded;
   final bool isDense;
   final int elevation;
@@ -867,6 +956,7 @@ class AppDropdown<T> extends StatefulWidget {
   final bool? enableFeedback;
   final AlignmentGeometry alignment;
   final BorderRadius? borderRadius;
+  final String? hint;
 
   AppDropdown({
     required this.name,
@@ -877,7 +967,7 @@ class AppDropdown<T> extends StatefulWidget {
     this.decoration,
     this.onChanged,
     this.valueTransformer,
-    this.enabled = true,
+    this.enabled,
     this.onSaved,
     this.autovalidateMode = AutovalidateMode.disabled,
     this.onReset,
@@ -885,7 +975,7 @@ class AppDropdown<T> extends StatefulWidget {
     this.restorationId,
     this.isExpanded = true,
     this.isDense = true,
-    this.isObligatory = false,
+    this.isObligatory = true,
     this.elevation = 8,
     this.iconSize = 24.0,
     this.style,
@@ -904,6 +994,7 @@ class AppDropdown<T> extends StatefulWidget {
     this.alignment = AlignmentDirectional.centerStart,
     this.borderRadius,
     this.label,
+    this.hint,
   });
 
   @override
@@ -946,39 +1037,63 @@ class _AppDropdownState<T> extends State<AppDropdown<T>> {
         onValidateStream: onValidate.stream,
         hasFocusStream: hasFocus.stream,
         currentValueStream: currentValue.stream,
-        enabled: widget.enabled && widget.items.isNotEmpty,
+        // enabled: widget.enabled && widget.items.isNotEmpty,
         validator: widget.validator,
-        builder: (stateColor, errorText, isFocused) {
+        builder: (stateColor, errorText, isFocused, isEnabled) {
           return FormBuilderDropdown(
             name: widget.name,
-            items: widget.items,
+            items: widget.items
+                .map((e) => DropdownMenuItem(
+                      key: Key(widget.items.indexOf(e).toString()),
+                      value: e,
+                      child: Text(e.toString()),
+                    ))
+                .toList(),
             alignment: widget.alignment,
             autofocus: widget.autofocus,
             autovalidateMode: widget.autovalidateMode,
             borderRadius: widget.borderRadius,
             decoration: widget.decoration ??
                 AppFormFieldDecoration(AppDropdown, context, widget.name,
-                    stateColor, errorText, isFocused, widget.isObligatory),
+                    stateColor, errorText, isFocused, widget.isObligatory,
+                    hint: widget.hint, label: widget.label),
             disabledHint: widget.disabledHint,
-            dropdownColor: widget.dropdownColor,
+            dropdownColor:
+                widget.dropdownColor ?? context.theme.appColors.background,
             elevation: widget.elevation,
             enableFeedback: widget.enableFeedback,
-            enabled: widget.enabled,
+            enabled: isEnabled,
             focusColor: widget.focusColor,
             focusNode: widget.focusNode ?? _focus,
             icon: widget.icon ??
-                StreamBuilder(
-                  stream: currentValue.stream,
-                  builder: (context, snapshot) {
-                    if (snapshot.data != null) {
-                      return IconButton(
-                          padding: EdgeInsets.zero,
-                          onPressed: () =>
-                              textFieldKey.currentState?.didChange(null),
-                          icon: const Icon(Icons.cancel));
-                    }
-                    return const Icon(Icons.arrow_drop_down);
-                  },
+                Transform.translate(
+                  offset: const Offset(10, 0),
+                  child: StreamBuilder(
+                    stream: currentValue.stream,
+                    builder: (context, snapshot) {
+                      if (snapshot.data != null) {
+                        return IconButton(
+                            padding: EdgeInsets.zero,
+                            onPressed: isEnabled
+                                ? () =>
+                                    textFieldKey.currentState?.didChange(null)
+                                : null,
+                            icon: Icon(
+                              Icons.cancel,
+                              color: context.theme.appColors.background,
+                            ));
+                      }
+                      return IgnorePointer(
+                        child: IconButton(
+                            padding: EdgeInsets.zero,
+                            onPressed: () {},
+                            icon: Icon(
+                              Icons.arrow_drop_down,
+                              color: context.theme.appColors.background,
+                            )),
+                      );
+                    },
+                  ),
                 ),
             iconDisabledColor: widget.iconDisabledColor,
             iconEnabledColor: widget.iconEnabledColor,
@@ -997,8 +1112,17 @@ class _AppDropdownState<T> extends State<AppDropdown<T>> {
             },
             onTap: widget.onTap,
             restorationId: widget.restorationId,
-            selectedItemBuilder: widget.selectedItemBuilder,
-            style: widget.style,
+            selectedItemBuilder: (BuildContext context) {
+              return widget.items.map((v) {
+                return Text(
+                  v.toString(),
+                  style: context.theme.appTypos.input,
+                );
+              }).toList();
+            },
+            style: widget.style ??
+                context.theme.appTypos.input
+                    .copyWith(overflow: TextOverflow.ellipsis),
             validator: widget.validator,
             valueTransformer: widget.valueTransformer,
           );
@@ -1014,7 +1138,7 @@ class AppSlider extends StatelessWidget {
   final InputDecoration? decoration;
   final ValueChanged<double?>? onChanged;
   final ValueTransformer<double?>? valueTransformer;
-  final bool enabled;
+  final bool? enabled;
   final bool isObligatory;
   final FormFieldSetter<double>? onSaved;
   final AutovalidateMode autovalidateMode;
@@ -1048,7 +1172,7 @@ class AppSlider extends StatelessWidget {
     this.decoration,
     this.onChanged,
     this.valueTransformer,
-    this.enabled = true,
+    this.enabled,
     this.onSaved,
     this.autovalidateMode = AutovalidateMode.disabled,
     this.onReset,
@@ -1081,7 +1205,7 @@ class AppSlider extends StatelessWidget {
         currentValueStream: currentValue.stream,
         enabled: enabled,
         validator: validator,
-        builder: (stateColor, errorText, isFocused) {
+        builder: (stateColor, errorText, isFocused, isEnabled) {
           return FormBuilderSlider(
             name: name,
             initialValue: initialValue,
@@ -1095,7 +1219,7 @@ class AppSlider extends StatelessWidget {
                     stateColor, errorText, isFocused, isObligatory),
             displayValues: displayValues ?? DisplayValues.current,
             divisions: divisions ?? max.toInt(),
-            enabled: enabled,
+            enabled: isEnabled,
             focusNode: focusNode,
             inactiveColor: inactiveColor ??
                 context.theme.appColors.primary.withOpacity(0.2),
@@ -1135,7 +1259,7 @@ class AppSwitch extends StatelessWidget {
   final InputDecoration? decoration;
   final ValueChanged<bool?>? onChanged;
   final ValueTransformer<bool?>? valueTransformer;
-  final bool enabled;
+  final bool? enabled;
   final FormFieldSetter<bool>? onSaved;
   final AutovalidateMode autovalidateMode;
   final VoidCallback? onReset;
@@ -1171,7 +1295,7 @@ class AppSwitch extends StatelessWidget {
     this.decoration,
     this.onChanged,
     this.valueTransformer,
-    this.enabled = true,
+    this.enabled,
     this.onSaved,
     this.autovalidateMode = AutovalidateMode.disabled,
     this.onReset,
@@ -1200,7 +1324,7 @@ class AppSwitch extends StatelessWidget {
         currentValueStream: currentValue.stream,
         enabled: enabled,
         validator: validator,
-        builder: (stateColor, errorText, isFocused) {
+        builder: (stateColor, errorText, isFocused, isEnabled) {
           return FormBuilderSwitch(
             name: name,
             title: title ??
@@ -1232,7 +1356,7 @@ class AppSwitch extends StatelessWidget {
             decoration: decoration ??
                 AppFormFieldDecoration(AppSwitch, context, name, stateColor,
                     errorText, isFocused, true),
-            enabled: enabled,
+            enabled: isEnabled,
             focusNode: focusNode,
             inactiveThumbColor:
                 inactiveThumbColor ?? context.theme.appColors.text,
@@ -1420,10 +1544,10 @@ class InputValidators {
     return maxLength(string, maxChars);
   }
 
-  static String? isPhoneValid(String? string) {
+  static String? isPhoneValid(String? string, {bool canBeNull = false}) {
     var isNull = isNotNull(string);
     if (isNull != null) {
-      return isNull;
+      return canBeNull ? null : isNull;
     }
     final phoneRegExp =
         RegExp(r"^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{3,6}$");
